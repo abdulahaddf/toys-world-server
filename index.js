@@ -9,7 +9,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const uri = "mongodb+srv://abdulahaddf1:BpwyQcr841PRWoPQ@cluster0.wg0iu7v.mongodb.net/?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.wg0iu7v.mongodb.net/?retryWrites=true&w=majority`;
 
 
 
@@ -93,7 +93,7 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('toy making server is running')
+    res.send('toy server is running')
 })
 
 app.listen(port, () => {
