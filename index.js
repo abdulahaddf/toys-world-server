@@ -30,6 +30,12 @@ async function run() {
 
         const toyCollection = client.db('toyDB').collection('toy');
 
+        app.get('/toy', async (req, res) => {
+            const cursor = toyCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
         
 
         app.post('/toy', async (req, res) => {
