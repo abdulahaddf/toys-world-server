@@ -20,23 +20,31 @@ const client = new MongoClient(uri, {
         version: ServerApiVersion.v1,
         strict: true,
         deprecationErrors: true,
-    }
+    },
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    maxPoolSize: 10,
 });
 
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+         client.connect((err) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+         })
 
         const toyCollection = client.db('toyDB').collection('toy');
 
         app.get('/toy', async (req, res) => {
-            const cursor = toyCollection.find();
-            const result = await cursor.toArray();
+           
+            const result = await toyCollection.find().toArray();
             res.send(result);
         })
 
-        app.get('/toy/:id', async(req, res) => {
+        app.get("/toy/:id", async(req, res) => {
             const id = req.params.id;
             const query = {_id: new ObjectId(id)}
             const result = await toyCollection.findOne(query);
@@ -49,36 +57,23 @@ async function run() {
             const result = await toyCollection.insertOne(newtoy);
             res.send(result);
         })
-
-        app.put('/toy/:id', async(req, res) => {
-            const id = req.params.id;
-            const filter = {_id: new ObjectId(id)}
-            const options = { upsert: true };
-            const updatedtoy = req.body;
-
-            const toy = {
-                $set: {
-                    name: updatedtoy.name, 
-                    quantity: updatedtoy.quantity, 
-                    supplier: updatedtoy.supplier, 
-                    taste: updatedtoy.taste, 
-                    category: updatedtoy.category, 
-                    details: updatedtoy.details, 
-                    photo: updatedtoy.photo
-                }
+                   
+        app.get("/mytoys", async (req, res) => {
+            // console.log(req.query.sellerEmail);
+            let query = {}
+            if(req.query?.sellerEmail){
+                query = {sellerEmail: req.query.sellerEmail}
             }
-
-            const result = await toyCollection.updateOne(filter, toy, options);
+            const result = await toyCollection.find(query).toArray();
             res.send(result);
-        })
-
-        app.delete('/toy/:id', async (req, res) => {
+          });
+       
+          app.delete('/toy/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await toyCollection.deleteOne(query);
             res.send(result);
         })
-
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
