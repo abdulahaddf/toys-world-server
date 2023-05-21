@@ -57,7 +57,7 @@ async function run() {
       if (req.query?.sellerEmail) {
         query = { sellerEmail: req.query.sellerEmail };
       }
-      const result = await toyCollection.find(query).toArray();
+      const result = await toyCollection.find(query).sort({ price: -1}).toArray();
       res.send(result);
     });
 //get by category
@@ -87,6 +87,7 @@ async function run() {
 //adding toy
     app.post("/toy", async (req, res) => {
       const newtoy = req.body;
+      newtoy.price = parseFloat(req.body.price)
       newtoy.createAt = new Date();
       console.log(newtoy);
       const result = await toyCollection.insertOne(newtoy);
@@ -113,9 +114,10 @@ async function run() {
         const updateDoc = {
           $set: {
             photo: body.photo,
+            name: body.name,
             sellerName: body.sellerName,
             subCategory: body.subCategory,
-            price: body.price,
+            price: parseFloat(body.price),
             rating: body.rating,
             quantity: body.quantity,
             description: body.description,
