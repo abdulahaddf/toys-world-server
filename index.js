@@ -73,7 +73,7 @@ async function run() {
     });
 
 
-  
+  //search toy
     app.get("/getToysByText", async (req, res) => {
       console.log(req.query.name);
       let query = {};
