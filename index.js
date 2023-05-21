@@ -71,6 +71,19 @@ async function run() {
         .toArray();
       res.send(result);
     });
+
+
+  
+    app.get("/getToysByText", async (req, res) => {
+      console.log(req.query.name);
+      let query = {};
+      if (req.query?.name) {
+        query = { name: req.query.name };
+      }
+      const result = await toyCollection.find(query).toArray();
+      res.send(result);
+    });
+
 //adding toy
     app.post("/toy", async (req, res) => {
       const newtoy = req.body;
